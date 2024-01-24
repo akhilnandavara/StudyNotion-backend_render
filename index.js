@@ -23,7 +23,7 @@ app.use(express.json());// json parser
 app.use(cookieParser());// cookie parser
 
 app.use(cors({
-    origin:"http://localhost:3000",
+    origin:"https://studynotion-edutechlearning.vercel.app/",
     credentials:true,
 }))
 
