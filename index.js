@@ -47,12 +47,15 @@ app.use("/api/v1/profile",profileRoute);
 app.use("/api/v1/reach",contactRoute);  
 
 // default route 
-app.use('/*',(req,res)=>{
-    return res.json({
-        success:true,
-        message:"Server is up and running"
-    })
-})
+app.get('/*', function(req, res) {
+    res.sendFile(path.join(__dirname, 'path/to/your/index.html',function(err) {
+      if (err) {
+        res.status(500).send(err)
+      }
+    }
+    ))
+  })
+
 // server  listen 
 app.listen(PORT,()=>{
     console.log(`App is running at port  ${PORT} `)
