@@ -47,7 +47,7 @@ app.use("/api/v1/profile",profileRoute);
 app.use("/api/v1/reach",contactRoute);  
 
 // default route 
-app.use('/',(req,res)=>{
+app.use('/*',(req,res)=>{
     return res.json({
         success:true,
         message:"Server is up and running"
