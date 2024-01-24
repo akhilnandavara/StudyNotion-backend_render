@@ -24,7 +24,7 @@ exports.resetPasswordToken=async(req,res)=>{
                                                     resetPasswordExpires:Date.now() + 5*60*1000},
                                                     {new:true});
         // generate link
-        const resetUrl=`https://studynotion-edutechlearning.vercel.app/update-password/${token}`
+        const resetUrl=`https://studynotion-edutechlearning.onrender.com/update-password/${token}`
         
         // send mail
         await mailSender(email,
