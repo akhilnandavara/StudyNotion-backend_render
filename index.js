@@ -46,9 +46,10 @@ app.use("/api/v1/course",courseRoute);
 app.use("/api/v1/payment",paymentsRoute);  
 app.use("/api/v1/profile",profileRoute);  
 app.use("/api/v1/reach",contactRoute);  
+app.use(history());
 
 // default route 
-app.use('/*',(req,res)=>{
+app.use('*',(req,res)=>{
     const root = path.join(__dirname, 'public'); // Update this path
 
     res.sendFile('index.html', { root });
