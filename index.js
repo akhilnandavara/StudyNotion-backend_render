@@ -49,7 +49,7 @@ app.use("/api/v1/reach",contactRoute);
 
 // default route 
 app.use('/*',(req,res)=>{
-    const root = path.join(__dirname, '../public/index.html'); // Update this path
+    const root = path.join(__dirname, 'public'); // Update this path
 
     res.sendFile('index.html', { root });
     return res.json({
