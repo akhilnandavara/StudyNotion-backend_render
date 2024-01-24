@@ -1,5 +1,6 @@
 const express=require('express');
 const app=express();
+const history = require('express-history-api-fallback');
 
 
 // import routes
@@ -47,15 +48,15 @@ app.use("/api/v1/profile",profileRoute);
 app.use("/api/v1/reach",contactRoute);  
 
 // default route 
-app.get('/*', function(req, res) {
-    res.sendFile(path.join(__dirname, 'path/to/your/index.html',function(err) {
-      if (err) {
-        res.status(500).send(err)
-      }
-    }
-    ))
-  })
+app.use('/*',(req,res)=>{
+    const root = path.join(__dirname, '../public/index.html'); // Update this path
 
+    res.sendFile('index.html', { root });
+    return res.json({
+        success:true,
+        message:"Server is up and running"
+    })
+})
 // server  listen 
 app.listen(PORT,()=>{
     console.log(`App is running at port  ${PORT} `)
