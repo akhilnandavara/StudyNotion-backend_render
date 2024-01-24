@@ -1,7 +1,5 @@
-const express=require('express');
-const app=express();
-const history = require('express-history-api-fallback');
-
+const express=require('express')
+const app=express()
 
 // import routes
 const userRoute=require('./routes/User');
@@ -46,13 +44,9 @@ app.use("/api/v1/course",courseRoute);
 app.use("/api/v1/payment",paymentsRoute);  
 app.use("/api/v1/profile",profileRoute);  
 app.use("/api/v1/reach",contactRoute);  
-app.use(history());
 
 // default route 
-app.use('*',(req,res)=>{
-    const root = path.join(__dirname, 'public'); // Update this path
-
-    res.sendFile('index.html', { root });
+app.use('/',(req,res)=>{
     return res.json({
         success:true,
         message:"Server is up and running"
