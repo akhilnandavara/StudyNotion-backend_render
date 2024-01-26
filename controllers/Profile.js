@@ -168,7 +168,7 @@ exports.getEnrolledCourses = async (req, res) => {
             })
             .exec()
         userDetails = userDetails.toObject()
-        var SubsectionLength = 0
+        let SubsectionLength = 0
         for (var i = 0; i < userDetails.courses.length; i++) {//loop for courses regisered by student
             let totalDurationInSeconds = 0
             SubsectionLength = 0
@@ -179,7 +179,7 @@ exports.getEnrolledCourses = async (req, res) => {
             }
             //finding courseProgress
             const courseId = userDetails.courses[i]._id;
-            let courseProgressCount = await CourseProgress.findOne({ courseId, userId, })//returns matched course |
+            let courseProgressCount = await CourseProgress.findOne({courseId, userId, })//returns matched course |
             courseProgressCount = courseProgressCount?.completedVideos.length //find completed video array length
             if (SubsectionLength === 0) {
                 userDetails.courses[i].progressPercentage = 100
@@ -217,6 +217,12 @@ exports.instructorDashboard = async (req, res) => {
         const courseData = courseDetails.map((course) => {
             const totalStudentsEnrolled = course?.studentsEnrolled?.length
             const totalAmountGenerated = totalStudentsEnrolled * course.price
+            let totalDurationInSeconds = 0
+            let totalDuration=0
+                for (var j = 0; j < course.courseContent.length; j++) {//loop for sections of course
+                    totalDurationInSeconds += course.courseContent[j].subSection.reduce((acc, curr) => acc + parseInt(curr.timeDuration), 0)// return total  subsection time duration 
+                   return totalDuration = convertSecondsToDuration(totalDurationInSeconds)
+                }
 
             // Create a new object with the additional fields
             const courseDataWithStats = {
@@ -225,6 +231,7 @@ exports.instructorDashboard = async (req, res) => {
                 courseDescription: course.courseDescription,
                 totalStudentsEnrolled,                               // Include other course properties as needed
                 totalAmountGenerated,
+                totalDuration,
             }
             return courseDataWithStats
         })
