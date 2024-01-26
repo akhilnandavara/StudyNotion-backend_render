@@ -219,8 +219,8 @@ exports.instructorDashboard = async (req, res) => {
             const totalAmountGenerated = totalStudentsEnrolled * course.price
             let totalDurationInSeconds = 0
             let totalDuration=0
-                for (var j = 0; j < course.courseContent.length; j++) {//loop for sections of course
-                    totalDurationInSeconds += course.courseContent[j].subSection.reduce((acc, curr) => acc + parseInt(curr.timeDuration), 0)// return total  subsection time duration 
+                for (let j = 0; j < course?.courseContent.length; j++) {//loop for sections of course
+                    totalDurationInSeconds += course?.courseContent[j]?.subSection.reduce((acc, curr) => acc + parseInt(curr.timeDuration), 0)// return total  subsection time duration 
                    return totalDuration = convertSecondsToDuration(totalDurationInSeconds)
                 }
 
