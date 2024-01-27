@@ -61,7 +61,6 @@ exports.updateProfile = async (req, res) => {
     }
 }
 
-// homeWork search about job scduling for deletion of acc
 // deletion of account
 exports.deleteAccount = async (req, res) => {
     try {
@@ -177,6 +176,7 @@ exports.getEnrolledCourses = async (req, res) => {
                 userDetails.courses[i].totalDuration = convertSecondsToDuration(totalDurationInSeconds)
                 SubsectionLength += userDetails.courses[i].courseContent[j].subSection.length
             }
+
             //finding courseProgress
             const courseId = userDetails.courses[i]._id;
             let courseProgressCount = await CourseProgress.findOne({courseId, userId, })//returns matched course |
@@ -212,17 +212,12 @@ exports.getEnrolledCourses = async (req, res) => {
 
 exports.instructorDashboard = async (req, res) => {
     try {
-        const courseDetails = await Course.find({ instructor: req.user.id })
+        const courseDetails = await Course.find({ instructor: req.user.id }).populate("courseContent").exec()
 
         const courseData = courseDetails.map((course) => {
             const totalStudentsEnrolled = course?.studentsEnrolled?.length
             const totalAmountGenerated = totalStudentsEnrolled * course.price
-            let totalDurationInSeconds = 0
-            let totalDuration=0
-                for (let j = 0; j < course?.courseContent.length; j++) {//loop for sections of course
-                    totalDurationInSeconds += course?.courseContent[j]?.subSection.reduce((acc, curr) => acc + parseInt(curr.timeDuration), 0)// return total  subsection time duration 
-                   return totalDuration = convertSecondsToDuration(totalDurationInSeconds)
-                }
+            
 
             // Create a new object with the additional fields
             const courseDataWithStats = {
@@ -231,7 +226,6 @@ exports.instructorDashboard = async (req, res) => {
                 courseDescription: course.courseDescription,
                 totalStudentsEnrolled,                               // Include other course properties as needed
                 totalAmountGenerated,
-                totalDuration,
             }
             return courseDataWithStats
         })

@@ -248,8 +248,14 @@ exports.getInstructorCourses = async (req, res) => {
     const instructorId = req.user.id                      // Get the instructor ID from the authenticated user or request body
 
     // Find all courses belonging to the instructor
-    const instructorCourses = await Course.find({ instructor: instructorId, }).sort({ createdAt: -1 })
+    let instructorCourses = await Course.find({ instructor: instructorId, }).sort({ createdAt: -1 }).populate({
+                                                                                                              path:"courseContent",
+                                                                                                            populate:{
+                                                                                                              path:"subSection"
+                                                                                                            } 
+                                                                                                              })
 
+  // console.log(instructorCourses)
     res.status(200).json({                     // Return the instructor's courses
       success: true,
       data: instructorCourses,
@@ -271,6 +277,7 @@ exports.editCourse = async (req, res) => {
     // fetch a data from body
     const { courseId } = req.body;
     const updates = req.body;
+    console.log(req.files)
     const course = await Course.findById(courseId);
     if (!course) {
       return res.status(404).json({
@@ -280,11 +287,11 @@ exports.editCourse = async (req, res) => {
     }
 
 
-    if (req.files && req.files.thumbnail !== undefined) {
-      const thumbnail = req.file.thumbnail;
+    if (req.files&&req.files.thumbnail!==undefined) {
+      const thumbnail = req.files.thumbnail;
       // upload thumbnail to cloudinary
       const thumbnailImage = await uploadImageToCloudinary(thumbnail, process.env.FOLDER_NAME);
-      return course.thumbnail = thumbnailImage.secure_url;
+      course.thumbnail = thumbnailImage.secure_url;
     }
 
     // Update a field present in req body
@@ -341,7 +348,7 @@ exports.deleteCourse = async (req, res) => {
 
     const course = await Course.findById({ _id: courseId })                     // Find the course
     if (!course) {
-      console.log("course for loop : ", course)
+      // console.log("course for loop : ", course)
       return res.status(404).json({ message: "Course not found" })
     }
 
