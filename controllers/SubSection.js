@@ -1,6 +1,7 @@
 const SubSection = require('../models/SubSection');
 const Section = require('../models/Section');
 const { uploadImageToCloudinary,deleteFilefromCloudinary } = require('../utils/imageUploader');
+const User = require('../models/User');
 
 // Create a new sub-section for a given section
 exports.createSubSection = async (req, res) => {
@@ -9,6 +10,15 @@ exports.createSubSection = async (req, res) => {
         const { sectionId, title, description } = req.body;
         // fetch video from files
         const video = req.files.video;
+        const userId=req.user.id
+
+        const demoUser = await User.findById(userId)
+        if (demoUser.demo) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
+            })
+        }
         // validation
         if (!sectionId || !title || !description  || !video) {
             return res.status(403).json({
@@ -60,6 +70,15 @@ exports.updateSubSection = async (req, res) => {
 
         const { sectionId, subSectionId, title, description } = req.body;
         const subSection = await SubSection.findById(subSectionId);
+        const userId=req.user.id
+
+        const demoUser = await User.findById(userId)
+        if (demoUser.demo) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
+            })
+        }
         // check for title and description fields
         if (title !== undefined) {
             subSection.title = title;
@@ -92,11 +111,21 @@ exports.updateSubSection = async (req, res) => {
         });
     }
 }
+
 // delete subSection
 exports.deleteSubSection = async (req, res) => {
 try {
     const { subSectionId, sectionId } = req.body
-    const SectionDeleted=await Section.findByIdAndUpdate( { _id: sectionId },  {$pull: {subSection: subSectionId,},} )
+    const userId=req.user.id
+
+        const demoUser = await User.findById(userId)
+        if (demoUser.demo) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
+            })
+        }
+    await Section.findByIdAndUpdate( { _id: sectionId },  {$pull: {subSection: subSectionId,},} )
 
     
     // upload video to cloudinary and get url

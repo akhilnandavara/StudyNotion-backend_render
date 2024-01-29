@@ -14,6 +14,14 @@ exports.createCourse = async (req, res) => {
     const userId = req.user.id
     let { courseName, courseDescription, whatYouWillLearn, price, tag: _tag, category, status, instructions: _instructions } = req.body
     const thumbnail = req.files.thumbnail                         // Get thumbnail image from request files
+
+    const demoUser=await User.findById(userId)
+    if(demoUser.demo){
+      return res.status(403).json({
+        success:false,
+        message:"This is a Demo Account"
+      })
+    }
     // let tag = JSON.stringify(_tag);
     const tag = JSON.parse(_tag)                                    //Convert the tag and instructions from stringified Array to Array
 
@@ -277,7 +285,16 @@ exports.editCourse = async (req, res) => {
     // fetch a data from body
     const { courseId } = req.body;
     const updates = req.body;
-    console.log(req.files)
+    const userId=req.user.id
+
+    const demoUser=await User.findById(userId)
+    if(demoUser.demo){
+      return res.status(403).json({
+        success:false,
+        message:"This is a Demo Account"
+      })
+    }
+    
     const course = await Course.findById(courseId);
     if (!course) {
       return res.status(404).json({
@@ -345,6 +362,16 @@ exports.deleteCourse = async (req, res) => {
   try {
     const { courseId } = req.body
     const instructorId = req.user.id
+    
+    const userId=req.user.id
+
+    const demoUser=await User.findById(userId)
+    if(demoUser.demo){
+      return res.status(403).json({
+        success:false,
+        message:"This is a Demo Account"
+      })
+    }
 
     const course = await Course.findById({ _id: courseId })                     // Find the course
     if (!course) {

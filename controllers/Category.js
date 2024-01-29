@@ -1,6 +1,5 @@
-const { default: mongoose } = require('mongoose');
 const Category = require('../models/Category');
-const Course = require('../models/Course');
+const User = require('../models/User');
 function getRandomInt(max) {
     return Math.floor(Math.random() * max)
 }
@@ -15,6 +14,15 @@ exports.createCategory = async (req, res) => {
             return res.status(403).json({
                 success: false,
                 message: "ALl the field are required",
+            })
+        }
+        const userId = req.user.id
+
+        const demoUser = await User.findById(userId)
+        if (demoUser.demo) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
             })
         }
 
@@ -80,18 +88,18 @@ exports.categoryPageDetails = async (req, res) => {
             .populate({
                 path: "courses",
                 match: { status: "Published" },
-                populate:{
-                    path:"ratingAndReviews",
+                populate: {
+                    path: "ratingAndReviews",
                 },
-                
+
             })
             .populate({
                 path: "courses",
                 populate: {
-                  path: "instructor",
+                    path: "instructor",
                 },
-              })
-            
+            })
+
 
             .exec();
         // Handle the case when the category is not found
@@ -116,7 +124,7 @@ exports.categoryPageDetails = async (req, res) => {
             .populate({
                 path: "courses",
                 match: { status: "Published" },
-                populate:"instructor"
+                populate: "instructor"
             })
             .exec()
 
@@ -131,9 +139,9 @@ exports.categoryPageDetails = async (req, res) => {
             })
             .exec()
 
-            const allCourses = allCategories.flatMap((category) => category.courses)
-            const mostSellingCourses = allCourses.sort((a, b) => b.sold - a.sold).slice(0, 10)
-      
+        const allCourses = allCategories.flatMap((category) => category.courses)
+        const mostSellingCourses = allCourses.sort((a, b) => b.sold - a.sold).slice(0, 10)
+
         // return res
         return res.status(200).json({
             success: true,
@@ -148,7 +156,7 @@ exports.categoryPageDetails = async (req, res) => {
         console.log(error);
         return res.status(500).json({
             success: false,
-            error:error.message,
+            error: error.message,
             message: "Internal Server Error."
         })
     }

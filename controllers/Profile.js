@@ -18,6 +18,15 @@ exports.updateProfile = async (req, res) => {
         // get user id
         const id = req.user.id;
 
+
+        const demoUser = await User.findById(id)
+        if (demoUser.demo) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
+            })
+        }
+
         // validation
         if (!contactNumber || !gender || !id) {
             return res.status(400).json({
@@ -66,6 +75,14 @@ exports.deleteAccount = async (req, res) => {
     try {
         // get user id
         const id = req.user.id;
+
+        const demoUser = await User.findById(id)
+        if (demoUser.demo) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
+            })
+        }
 
         // validation
         const userDetails = await User.findById(id);
@@ -132,6 +149,14 @@ exports.updateDisplayPicture = async (req, res) => {
     try {
         const displayPicture = req.files.displayPicture
         const userId = req.user.id
+
+        const demoUser = await User.findById(userId)
+        if (demoUser.demo) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
+            })
+        }
         const image = await uploadImageToCloudinary(displayPicture, process.env.FOLDER_NAME, 1000, 1000)
 
         const updatedProfile = await User.findByIdAndUpdate({ _id: userId }, { image: image.secure_url }, { new: true })
@@ -179,7 +204,7 @@ exports.getEnrolledCourses = async (req, res) => {
 
             //finding courseProgress
             const courseId = userDetails.courses[i]._id;
-            let courseProgressCount = await CourseProgress.findOne({courseId, userId, })//returns matched course |
+            let courseProgressCount = await CourseProgress.findOne({ courseId, userId, })//returns matched course |
             courseProgressCount = courseProgressCount?.completedVideos.length //find completed video array length
             if (SubsectionLength === 0) {
                 userDetails.courses[i].progressPercentage = 100
@@ -217,7 +242,7 @@ exports.instructorDashboard = async (req, res) => {
         const courseData = courseDetails.map((course) => {
             const totalStudentsEnrolled = course?.studentsEnrolled?.length
             const totalAmountGenerated = totalStudentsEnrolled * course.price
-            
+
 
             // Create a new object with the additional fields
             const courseDataWithStats = {
@@ -246,24 +271,25 @@ exports.adminDashboard = async (req, res) => {
         const userStudents = (await User.find({ accountType: "Student" })).length
         const userInstructor = (await User.find({ accountType: "Instructor" }))
         const totalCourses = (await Course.find({}))
-        const ratingsAndReviews=await RatingsAndReview.find({})
-        .sort({ rating: "desc" })
-        .populate({
-            path: "user",
-            select: "firstName lastName email image"
-        }).populate({
-            path: "course",
-            select: "courseName"})
-        .exec();
+        const ratingsAndReviews = await RatingsAndReview.find({})
+            .sort({ rating: "desc" })
+            .populate({
+                path: "user",
+                select: "firstName lastName email image"
+            }).populate({
+                path: "course",
+                select: "courseName"
+            })
+            .exec();
 
-        const totalAmountGeneratedCourseWise=totalCourses.map((course)=>{
+        const totalAmountGeneratedCourseWise = totalCourses.map((course) => {
             const totalStudentsEnrolled = course?.studentsEnrolled?.length
             const totalAmountGenerated = totalStudentsEnrolled * course.price
             return totalAmountGenerated
         })
-        const totalIncome = totalAmountGeneratedCourseWise?.reduce((acc, curr) => acc + curr,0 );
-        const totalCoursesCount=totalCourses.length 
-        
+        const totalIncome = totalAmountGeneratedCourseWise?.reduce((acc, curr) => acc + curr, 0);
+        const totalCoursesCount = totalCourses.length
+
         const adminData = {
             userStudents,
             userInstructor,
@@ -283,28 +309,29 @@ exports.adminDashboard = async (req, res) => {
 
 }
 
-exports.adminApproval=async(req,res)=>{
+exports.adminApproval = async (req, res) => {
     try {
         // Valdiation
-        const {instructorId}=req.body
+        const { instructorId } = req.body
 
-        if(!instructorId){
-            return res.status(404).json({success:false,error:"Missing Intructor Id"})
+        if (!instructorId) {
+            return res.status(404).json({ success: false, error: "Missing Intructor Id" })
         }
 
         // update approved to true
-        const updatedUserData=await User.findByIdAndUpdate({_id:instructorId},{approved:true},{new:true})
+        const updatedUserData = await User.findByIdAndUpdate({ _id: instructorId }, { approved: true }, { new: true })
         // send mail to instructor
-        await mailSender(updatedUserData.email,"Successfully Approved Instructor",instructorApproved(updatedUserData.firstName," ",updatedUserData.lastName))
+        await mailSender(updatedUserData.email, "Successfully Approved Instructor", instructorApproved(updatedUserData.firstName, " ", updatedUserData.lastName))
 
         // Return  res
         return res.status(200).json({
-            success:true,
-            message:"Instructor is successfully Approved"})
-        
+            success: true,
+            message: "Instructor is successfully Approved"
+        })
+
     } catch (error) {
         console.log(error)
-        res.status(500).json({ message: "Server Error" })        
+        res.status(500).json({ message: "Server Error" })
     }
 }
 
@@ -312,10 +339,10 @@ exports.adminApproval=async(req,res)=>{
 exports.rejectInstructorRequest = async (req, res) => {
     try {
         // get user id
-       const {instructorId}=req.body;
+        const { instructorId } = req.body;
 
         // validation
-        const userDetails = await User.findById({_id:instructorId});
+        const userDetails = await User.findById({ _id: instructorId });
         if (!userDetails) {
             return res.status(400).json({
                 success: false,
@@ -327,7 +354,7 @@ exports.rejectInstructorRequest = async (req, res) => {
         await Profile.findByIdAndDelete({ _id: new mongoose.Types.ObjectId(userDetails.additionalDetails) })
 
         // delete user data
-        await User.findByIdAndDelete({ _id:instructorId})
+        await User.findByIdAndDelete({ _id: instructorId })
 
         // return res 
         return res.status(200).json({

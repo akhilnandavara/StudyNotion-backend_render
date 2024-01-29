@@ -176,6 +176,7 @@ exports.login = async (req, res) => {
                 message: 'All field are required',
             });
         }
+        
 
         // user check
         const user = await User.findOne({ email }).populate('additionalDetails');
@@ -248,6 +249,15 @@ exports.changePassword = async (req, res) => {
                 message: 'user does not exist'
             })
         }
+
+        const demoUser = await User.findById(userId)
+        if (demoUser.demo) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
+            })
+        }
+
 
         // get data from body
         const { oldPassword, newPassword, confirmPassword } = req.body;

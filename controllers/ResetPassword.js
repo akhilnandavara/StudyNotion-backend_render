@@ -16,6 +16,8 @@ exports.resetPasswordToken=async(req,res)=>{
                     message:'Your Email is not registerd  with us '
                 })
         }
+        
+        
         // generate token
         const token = crypto.randomUUID();
         // update user by adding token and expiration time 
@@ -24,7 +26,8 @@ exports.resetPasswordToken=async(req,res)=>{
                                                     resetPasswordExpires:Date.now() + 5*60*1000},
                                                     {new:true});
         // generate link
-        const resetUrl=`https://studynotion-edutechlearning.onrender.com/update-password/${token}`
+        // const resetUrl=`https://studynotion-edutechlearning.onrender.com/update-password/${token}`
+        const resetUrl=`http://localhost:3000/update-password/${token}`
         
         // send mail
         await mailSender(email,

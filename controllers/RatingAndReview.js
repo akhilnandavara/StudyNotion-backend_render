@@ -1,6 +1,7 @@
 const Course = require("../models/Course");
 const RatingsAndReview = require("../models/RatingsAndReview");
 const { default: mongoose } = require("mongoose");
+const User = require("../models/User");
 
 // create rating  and review
 exports.createRating = async (req, res) => {
@@ -9,6 +10,14 @@ exports.createRating = async (req, res) => {
         const { courseId, rating, review } = req.body;
         // get user id
         const userId = req.user.id;
+
+        const demoUser = await User.findById(userId)
+        if (demoUser) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
+            })
+        }
 
         // check user is enrolled  for a course
         const CourseDetails = await Course.findOne(
@@ -35,15 +44,15 @@ exports.createRating = async (req, res) => {
         }
         // create rating review
         const ratingReview = await RatingsAndReview.create({
-            rating, review, course:courseId, user: userId,
+            rating, review, course: courseId, user: userId,
         })
 
         // update rating and review on course
         const updatedCourseDetails = await Course.findOneAndUpdate(
-                                                                    { _id: courseId },
-                                                                    { $push: { ratingAndReviews: ratingReview._id } },
-                                                                    { new: true }
-                                                                 )
+            { _id: courseId },
+            { $push: { ratingAndReviews: ratingReview._id } },
+            { new: true }
+        )
         // console.log(updatedCourseDetails)
         // return res
         return res.status(200).json({
@@ -51,7 +60,7 @@ exports.createRating = async (req, res) => {
             message: "Review created successfully",
             ratingReview,
         })
-        } catch (error) {
+    } catch (error) {
         console.log(error)
         return res.status(500).json({
             success: false,
@@ -74,7 +83,7 @@ exports.getAverageRating = async (req, res) => {
                 },
             },
             {
-                $group:{
+                $group: {
                     _id: null,
                     averageRating: { $avg: "$rating" }
                 },
@@ -120,7 +129,7 @@ exports.getAllRating = async (req, res) => {
             .exec();
         return res.status(200).json({
             success: true,
-            data:allReviews,
+            data: allReviews,
             message: "Reviews fetched successfully"
         })
     } catch (error) {

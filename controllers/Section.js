@@ -1,6 +1,7 @@
 const Course = require('../models/Course');
 const Section = require('../models/Section');
 const SubSection = require('../models/SubSection');
+const User = require('../models/User');
 
 
 // section creation 
@@ -9,6 +10,14 @@ exports.createSection = async (req, res) => {
         // get data from body
         const { sectionName, courseId } = req.body;
 
+        const userId=req.user.id
+        const demoUser = await User.findById(userId)
+        if (demoUser.demo) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
+            })
+        }
         // validate
         if (!sectionName || !courseId) {
             return res.status(403).json({
@@ -43,6 +52,16 @@ exports.updateSection = async (req, res) => {
     try {
         //   get data from body
         const { sectionName, sectionId,courseId } = req.body;
+
+        const userId=req.user.id
+
+        const demoUser = await User.findById(userId)
+        if (demoUser.demo) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
+            })
+        }
         // validation
         if (!sectionName || !sectionId||!courseId) {
             return res.status(403).json({
@@ -51,7 +70,7 @@ exports.updateSection = async (req, res) => {
             })
         }
         // section update on db
-        const section = await Section.findByIdAndUpdate(sectionId, { sectionName }, { new: true });
+        await Section.findByIdAndUpdate(sectionId, { sectionName }, { new: true });
         // update section on  course 
      
         const course = await Course.findById(courseId).populate({ path: "courseContent", populate: { path: "subSection" }, }).exec();
@@ -76,6 +95,16 @@ exports.deleteSection = async (req, res) => {
     try {
         //  get data from parameter
         const { sectionId,courseId } = req.body;
+
+        const userId=req.user.id
+
+        const demoUser = await User.findById(userId)
+        if (demoUser.demo) {
+            return res.status(403).json({
+                success: false,
+                message: "This is a Demo Account"
+            })
+        }
         // findby id and delete a section
         const section = await Section.findById({_id:sectionId});
 		if(!section) {
