@@ -22,10 +22,10 @@ app.use(express.json());// json parser
 app.use(cookieParser());// cookie parser
 
 app.use(cors({
-    origin:"http://localhost:3000",
+    origin:"https://studynotion-edutechlearning.onrender.com",
     credentials:true,
 }))
-// origin:"https://studynotion-edutechlearning.onrender.com",
+// origin:"http://localhost:3000",
 
 app.use(
     fileUpload({
