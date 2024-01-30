@@ -12,7 +12,7 @@ exports.createRating = async (req, res) => {
         const userId = req.user.id;
 
         const demoUser = await User.findById(userId)
-        if (demoUser) {
+        if (demoUser.demo) {
             return res.status(403).json({
                 success: false,
                 message: "This is a Demo Account"
