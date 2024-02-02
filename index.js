@@ -22,8 +22,10 @@ app.use(express.json());// json parser
 app.use(cookieParser());// cookie parser
 
 app.use(cors({
+    origin:"https://studynotion-edutechlearning.onrender.com",
     credentials:true,
 }))
+// origin:"http://localhost:3000",
 
 app.use(
     fileUpload({
@@ -42,7 +44,8 @@ app.use("/api/v1/auth",userRoute);
 app.use("/api/v1/course",courseRoute);  
 app.use("/api/v1/payment",paymentsRoute);  
 app.use("/api/v1/profile",profileRoute);  
-app.use("/api/v1/reach",contactRoute);  
+app.use("/api/v1/reach",contactRoute); 
+ 
 
 // default route 
 app.use('/',(req,res)=>{

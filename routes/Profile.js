@@ -6,7 +6,7 @@ const router = express.Router()
 
 
 const { auth, isInstructor, isStudent, isAdmin } = require("../middlewares/auth")
-const {deleteAccount, updateProfile, getUserDetails, updateDisplayPicture,  getEnrolledCourses, instructorDashboard, adminDashboard, adminApproval, rejectInstructorRequest} = require("../controllers/Profile")
+const {deleteAccount, updateProfile, getUserDetails, updateDisplayPicture,  getEnrolledCourses, instructorDashboard, adminDashboard, adminApproval, rejectInstructorRequest, getAiResponse} = require("../controllers/Profile")
    
     
 // ********************************************************************************************************
@@ -18,6 +18,8 @@ router.get("/getUserDetails", auth, getUserDetails)
 router.get("/getEnrolledCourses", auth,isStudent, getEnrolledCourses)                  // Get Enrolled Courses
 router.put("/updateDisplayPicture", auth, updateDisplayPicture)
 router.get("/instructorDashboard",auth, isInstructor, instructorDashboard)
+router.post('/getAiResponse',getAiResponse)
+
 
 
 //**********************************************************************************************************

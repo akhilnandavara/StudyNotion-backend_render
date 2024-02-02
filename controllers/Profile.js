@@ -8,6 +8,7 @@ const { convertSecondsToDuration } = require("../utils/secToDuration");
 const RatingsAndReview = require('../models/RatingsAndReview');
 const mailSender = require('../utils/mailSender');
 const { instructorApproved } = require('../mail/templates/instructorApproved');
+const { default: OpenAI } = require('openai');
 
 
 // update profile
@@ -369,4 +370,35 @@ exports.rejectInstructorRequest = async (req, res) => {
             message: "Internal server error please try again"
         })
     }
+}
+
+
+// chat bot
+exports.getAiResponse=async(req,res)=>{
+    const {userPrompt}=req.body
+    
+    try {
+          const openai = new OpenAI({
+              apiKey: process.env.OPENAI_API_KEY
+            });
+
+        ;(async()=> {
+            const response = await openai.chat.completions.create({
+              messages: [{role: 'user', content:userPrompt }],
+              model: 'gpt-3.5-turbo',
+              max_tokens:10,
+            });
+            res.status(200).json({
+                success:true,
+                data:response.choices[0].message
+            })
+          })()
+        
+      } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            success:false,
+            message:error.message
+        })
+      }
 }
