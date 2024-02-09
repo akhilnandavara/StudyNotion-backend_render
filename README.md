@@ -53,4 +53,6 @@ This project is licensed under the [MIT License](LICENSE).
 
 For inquiries, suggestions, or support related to the backend, contact the project maintainer:
 - Email: [akhiln1108@gmail.com](mailto:akhiln1108@gmail.com)
-- GitHub: [StudyNotion-backend_render](https://github.com/akhilnandavara/StudyNotion-backend_render)
+
+- GitHub: [StudyNotion-FrontEnd](https://github.com/akhilnandavara/StudyNotion_frontend)
+- GitHub: [StudyNotion-Backend](https://github.com/akhilnandavara/StudyNotion-backend_render)
