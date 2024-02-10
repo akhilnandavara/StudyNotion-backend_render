@@ -386,7 +386,7 @@ exports.getAiResponse=async(req,res)=>{
             const response = await openai.chat.completions.create({
               messages: [{role: 'user', content:userPrompt }],
               model: 'gpt-3.5-turbo',
-              max_tokens:10,
+              max_tokens:100,
             });
             res.status(200).json({
                 success:true,
